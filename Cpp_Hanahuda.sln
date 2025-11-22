@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36429.23 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cpp_Hanahuda", "Cpp_Hanahuda\Cpp_Hanahuda.vcxproj", "{F93E38E7-9D97-46E8-A480-8E69FE4CE43B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F93E38E7-9D97-46E8-A480-8E69FE4CE43B}.Debug|x64.ActiveCfg = Debug|x64
+		{F93E38E7-9D97-46E8-A480-8E69FE4CE43B}.Debug|x64.Build.0 = Debug|x64
+		{F93E38E7-9D97-46E8-A480-8E69FE4CE43B}.Release|x64.ActiveCfg = Release|x64
+		{F93E38E7-9D97-46E8-A480-8E69FE4CE43B}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4A21B957-C92A-4DBB-A808-2D6480BF24A5}
+	EndGlobalSection
+EndGlobal
