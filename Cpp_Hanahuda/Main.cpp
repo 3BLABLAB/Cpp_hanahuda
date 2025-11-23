@@ -1,10 +1,5 @@
 ﻿# include <Siv3D.hpp> // Siv3D v0.6.16
 
-using BahudaLines = std::array<Array<Huda>, 12>;
-using TehudaLines = std::array<Huda, 8>;
-
-bool BahudaAppeared[12][4];
-
 struct Huda {
 	int width;
 	int height;
@@ -15,23 +10,62 @@ public: Huda() :width(40), height(60) {}
 public: Huda(int m, int o) :month(m), order(o), width(40), height(60) {}
 };
 
+using BahudaLines = std::array<Array<int>, 12>;
+using TehudaLines = std::array<Huda, 8>;
+
+bool BahudaAppeared[12][4];
+
 void DrawRadialGradientBackground(const ColorF& centerColor, const ColorF& outerColor)
 {
 	Circle{ Scene::Center(), (Scene::Size().length() * 0.5) }
 	.draw(centerColor, outerColor);
 }
 
-void DrawTable(int turn = 0, BahudaLines Bahuda, TehudaLines ATehuda, TehudaLines BTehuda) {
+void DrawTable(int turn, BahudaLines Bahuda, TehudaLines ATehuda, TehudaLines BTehuda) {
 	//Vec2 CenterPos = Window::Center();
 	Vec2 CenterPos = Scene::Center();
 	Huda huda;
-	int gap = 10;
 	//Render yamahuda
 	RectF(Arg::center(CenterPos), huda.width, huda.height)
 		.drawFrame(1, Palette::Black)
 		.draw(ColorF(0.26, 0.43, 0.43));
 	//Render bahuda
 	//TODO
+	int gap = 10;
+	float BaseDx = gap * 1.5 + gap * 2 + huda.width * 3;
+	float BaseDy = gap * 0.5 + huda.height * 0.5;
+	//１～3
+	Vec2 BasePoint = CenterPos + Vec2{ -BaseDx , -BaseDy };
+	for (int i = 0; i < 3; i++) {
+		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
+		RectF(Arg::center(Position), huda.width, huda.height)
+			.drawFrame(1, Palette::Black)
+			.draw(ColorF(0.26, 0.43, 0.43));
+	}
+	//４～６
+	BasePoint = CenterPos + Vec2{ -BaseDx , +BaseDy };
+	for (int i = 0; i < 3; i++) {
+		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
+		RectF(Arg::center(Position), huda.width, huda.height)
+			.drawFrame(1, Palette::Black)
+			.draw(ColorF(0.26, 0.43, 0.43));
+	}
+	//７～９
+	BasePoint = CenterPos + Vec2{ +gap * 1.5 + huda.width , -BaseDy };
+	for (int i = 0; i < 3; i++) {
+		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
+		RectF(Arg::center(Position), huda.width, huda.height)
+			.drawFrame(1, Palette::Black)
+			.draw(ColorF(0.26, 0.43, 0.43));
+	}
+	//１０～１２
+	BasePoint = CenterPos + Vec2{ +gap * 1.5 + huda.width , +BaseDy };
+	for (int i = 0; i < 3; i++) {
+		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
+		RectF(Arg::center(Position), huda.width, huda.height)
+			.drawFrame(1, Palette::Black)
+			.draw(ColorF(0.26, 0.43, 0.43));
+	}
 	return;
 }
 
@@ -66,7 +100,7 @@ void SetUp(BahudaLines& Bahuda, TehudaLines& ATehuda, TehudaLines& BTehuda) {
 	for (int i = 0; i < 8; i++) {
 		Huda NewHuda = GetNewHuda();
 		ATehuda[i] = NewHuda;
-		Huda NewHuda = GetNewHuda();
+		NewHuda = GetNewHuda();
 		BTehuda[i] = NewHuda;
 	}
 }
