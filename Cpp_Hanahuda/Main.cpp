@@ -2,6 +2,8 @@
 # include <Siv3D.hpp> // Siv3D v0.6.16
 # include <memory>
 
+#define ATehudaBasePosition {200,500}
+
 struct HudaTextureManager
 {
 	static inline std::unique_ptr<Texture> textures[12][4];
@@ -28,6 +30,7 @@ struct Huda {
 	int height;
 	int month;
 	int order;
+	Vec2 pos;
 
 public: Huda() :month(0), order(0), width(40), height(60) {}
 public: Huda(int m, int o) :month(m), order(o), width(40), height(60) {}
@@ -43,7 +46,10 @@ public:void SetTehuda() {
 	this->width = 80;
 	this->height = 120;
 };
-public:void Render(Vec2 pos) {
+public:void SetPosition(Vec2 position) {
+	this->pos = position;
+}
+public:void Render() {
 	HudaTextureManager::Get(month, order)
 		.resized(width,height)
 		.drawAt(pos);
@@ -59,7 +65,7 @@ void DrawRadialGradientBackground(const ColorF& centerColor, const ColorF& outer
 	.draw(centerColor, outerColor);
 }
 
-void DrawTable(int turn, BahudaLines Bahuda, TehudaLines ATehuda, TehudaLines BTehuda) {
+void DrawTable(int turn, BahudaLines& Bahuda, TehudaLines& ATehuda, TehudaLines& BTehuda) {
 	Vec2 CenterPos = Scene::Center();
 	Huda huda;
 	//Render yamahuda
@@ -76,8 +82,9 @@ void DrawTable(int turn, BahudaLines Bahuda, TehudaLines ATehuda, TehudaLines BT
 	for (int i = 0; i < 3; i++) {
 		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
 		auto MonthBahuda = Bahuda[i];
-		for (auto huda : MonthBahuda) {
-			huda.Render(Position);
+		for (auto& huda : MonthBahuda) {
+			huda.SetPosition(Position);
+			huda.Render();
 		}
 	}
 	//４～６
@@ -85,8 +92,9 @@ void DrawTable(int turn, BahudaLines Bahuda, TehudaLines ATehuda, TehudaLines BT
 	for (int i = 0; i < 3; i++) {
 		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
 		auto MonthBahuda = Bahuda[i+3];
-		for (auto huda : MonthBahuda) {
-			huda.Render(Position);
+		for (auto& huda : MonthBahuda) {
+			huda.SetPosition(Position);
+			huda.Render();
 		}
 	}
 	//７～９
@@ -94,8 +102,9 @@ void DrawTable(int turn, BahudaLines Bahuda, TehudaLines ATehuda, TehudaLines BT
 	for (int i = 0; i < 3; i++) {
 		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
 		auto MonthBahuda = Bahuda[i+6];
-		for (auto huda : MonthBahuda) {
-			huda.Render(Position);
+		for (auto& huda : MonthBahuda) {
+			huda.SetPosition(Position);
+			huda.Render();
 		}
 	}
 	//１０～１２
@@ -103,29 +112,31 @@ void DrawTable(int turn, BahudaLines Bahuda, TehudaLines ATehuda, TehudaLines BT
 	for (int i = 0; i < 3; i++) {
 		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
 		auto MonthBahuda = Bahuda[i+9];
-		for (auto huda : MonthBahuda) {
-			huda.Render(Position);
+		for (auto& huda : MonthBahuda) {
+			huda.SetPosition(Position);
+			huda.Render();
 		}
 	}
 
 	//Render Tehuda
 	//A
-	BasePoint = Vec2{ 200,500 };
+	BasePoint = Vec2 ATehudaBasePosition;
 	gap = -20;
 	for (int i = 0; i < size(ATehuda);i++) {
+		Huda& huda = ATehuda[i];
 		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
-		huda = ATehuda[i];
-		huda.Render(Position);
-		//std::cout << huda.width << huda.height << std::endl;
+		
+		huda.SetPosition(Position);
+		huda.Render();
 	}
+	//B
 	BasePoint = Vec2{ 200,100 };
 	gap = -20;
-	for (int i = 0; i < size(ATehuda); i++) {
+	for (int i = 0; i < size(BTehuda); i++) {
 		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
 		RectF(Arg::center(Position), huda.width, huda.height)
 			.drawFrame(1, Palette::Black)
 			.draw(ColorF(0.26, 0.43, 0.43));
-		//std::cout << huda.width << huda.height << std::endl;
 	}
 	return;
 }
@@ -199,6 +210,48 @@ void PrintMonthsWithCards(const BahudaLines& bahuda)
 	Print << U"Months with >=1 card: " << line;
 }
 
+//プレイヤーの手札クリック検知
+// 戻り値: クリックされた手札の index（0～7）or -1
+int DetectSelectedTehuda(const TehudaLines& ATehuda,int& SelectedIndex, int& DecidedIndex)
+{
+	Vec2 BasePoint = Vec2{ 200, 500 };
+	int gap = -20;
+
+	int w = ATehuda[0].width;
+	int h = ATehuda[0].height;
+
+	for (int i = 0; i < ATehuda.size(); i++)
+	{
+		Vec2 pos = BasePoint + i * Vec2(w + gap, 0);
+
+		// 画面上の当たり判定
+		RectF hitbox(Arg::center(pos), w, h);
+
+		if (hitbox.mouseOver())
+		{
+			SelectedIndex = i;
+			// ダブルクリックで確定
+			if (hitbox.leftClicked())
+			{
+				DecidedIndex = i;
+			}
+			break;
+		}
+	}
+	return -1;
+}
+
+void HighlightCard(const Huda& card)
+{
+	RectF frame(
+		Arg::center(card.pos),   // 描画位置と同一座標
+		card.width + 8,
+		card.height + 8
+	);
+
+	frame.drawFrame(5, Palette::Yellow);
+}
+
 void Main()
 {
 	//Print << FileSystem::CurrentDirectory();
@@ -214,11 +267,29 @@ void Main()
 	//for Debugging
 	PrintMonthsWithCards(Bahuda);
 
+	bool IsPlayerTurn = true;
+	int SelectedIndex = -1;   
+	int DecidedIndex = -1;  
 	while (System::Update())
 	{
 		DrawRadialGradientBackground(ColorF{ 0.2, 0.8, 0.4 }, ColorF{ 0.26, 0.43, 0.35 });
 		DrawTable(turn, Bahuda, ATehuda, BTehuda);
 
+		if (IsPlayerTurn) {
+			Huda DecidedHuda;
+			int Clicked = DetectSelectedTehuda(ATehuda,SelectedIndex,DecidedIndex);
+			//マウスオーバーされたものを強調表示
+			if (SelectedIndex != -1)
+			{
+				HighlightCard(ATehuda[SelectedIndex]);
+			}
+			//ダブルクリックで決定
+			if (DecidedIndex != -1)
+			{
+				DecidedHuda = ATehuda[DecidedIndex];
+				Print << DecidedHuda.month+1<<DecidedHuda.order+1;
+			}
+		}
 	}
 }
 
