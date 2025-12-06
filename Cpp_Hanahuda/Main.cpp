@@ -115,10 +115,16 @@ void DrawTable(int turn, BahudaLines Bahuda, TehudaLines ATehuda, TehudaLines BT
 	for (int i = 0; i < size(ATehuda);i++) {
 		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
 		huda = ATehuda[i];
+		huda.Render(Position);
+		//std::cout << huda.width << huda.height << std::endl;
+	}
+	BasePoint = Vec2{ 200,100 };
+	gap = -20;
+	for (int i = 0; i < size(ATehuda); i++) {
+		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
 		RectF(Arg::center(Position), huda.width, huda.height)
 			.drawFrame(1, Palette::Black)
 			.draw(ColorF(0.26, 0.43, 0.43));
-
 		//std::cout << huda.width << huda.height << std::endl;
 	}
 	return;
