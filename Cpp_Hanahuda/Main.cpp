@@ -125,7 +125,6 @@ void DrawTable(int turn, BahudaLines& Bahuda, TehudaLines& ATehuda, TehudaLines&
 	for (int i = 0; i < ATehuda.size();i++) {
 		Huda& huda = ATehuda[i];
 		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
-		
 		huda.SetPosition(Position);
 		huda.Render();
 	}
@@ -176,10 +175,10 @@ void InitializeTable(bool(&BahudaAppeared)[12][4],BahudaLines& Bahuda, TehudaLin
 	for (int i = 0; i < 8; i++) {
 		Huda NewHuda = GetNewHuda(BahudaAppeared);
 		NewHuda.SetTehuda();
-		ATehuda[i] = NewHuda;
+		ATehuda.push_back(NewHuda);
 		NewHuda = GetNewHuda(BahudaAppeared);
 		NewHuda.SetTehuda();
-		BTehuda[i] = NewHuda;
+		BTehuda.push_back(NewHuda);
 	}
 }
 
@@ -252,6 +251,11 @@ void HighlightCard(const Huda& card)
 	frame.drawFrame(5, Palette::Yellow);
 }
 
+void DrawYamahuda(BahudaLines& Bahuda, bool(&BahudaAppeared)[12][4]) {
+	Huda NewHuda = GetNewHuda(BahudaAppeared);
+	Bahuda[NewHuda.month].push_back(NewHuda);
+}
+
 void Main()
 {
 	//Print << FileSystem::CurrentDirectory();
@@ -264,7 +268,7 @@ void Main()
 	//Scene::SetBackground(ColorF{ 0.3, 0.9, 0.6 });
 	int turn = 0;
 	BahudaLines Bahuda;
-	TehudaLines ATehuda(8), BTehuda(8);
+	TehudaLines ATehuda, BTehuda;
 	HudaTextureManager::Load();
 	InitializeTable(BahudaAppeared,Bahuda, ATehuda, BTehuda);
 	//for Debugging
@@ -278,6 +282,9 @@ void Main()
 		DrawRadialGradientBackground(ColorF{ 0.2, 0.8, 0.4 }, ColorF{ 0.26, 0.43, 0.35 });
 		DrawTable(turn, Bahuda, ATehuda, BTehuda);
 
+		if (ATehuda.empty() || BTehuda.empty()){
+			return ;
+		}
 		if (IsPlayerTurn) {
 			Huda DecidedHuda;
 			int Clicked = DetectSelectedTehuda(ATehuda,SelectedIndex,DecidedIndex);
@@ -299,7 +306,10 @@ void Main()
 					Bahuda[DecidedHuda.month].clear();
 					//手札から削除
 					ATehuda.erase(ATehuda.begin()+ DecidedIndex);
+					SelectedIndex = -1;
+					DecidedIndex = -1;
 				}
+				DrawYamahuda(Bahuda, BahudaAppeared);
 			}
 
 		}
