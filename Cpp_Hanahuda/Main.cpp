@@ -75,11 +75,6 @@ void DrawTable(int turn, BahudaLines Bahuda, TehudaLines ATehuda, TehudaLines BT
 	Vec2 BasePoint = CenterPos + Vec2{ -BaseDx , -BaseDy };
 	for (int i = 0; i < 3; i++) {
 		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
-		/*
-		RectF(Arg::center(Position), huda.width, huda.height)
-			.drawFrame(1, Palette::Black)
-			.draw(ColorF(0.26, 0.43, 0.43));
-		*/
 		auto MonthBahuda = Bahuda[i];
 		for (auto huda : MonthBahuda) {
 			huda.Render(Position);
@@ -89,11 +84,6 @@ void DrawTable(int turn, BahudaLines Bahuda, TehudaLines ATehuda, TehudaLines BT
 	BasePoint = CenterPos + Vec2{ -BaseDx , +BaseDy };
 	for (int i = 0; i < 3; i++) {
 		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
-		/*
-		RectF(Arg::center(Position), huda.width, huda.height)
-			.drawFrame(1, Palette::Black)
-			.draw(ColorF(0.26, 0.43, 0.43));
-		*/
 		auto MonthBahuda = Bahuda[i+3];
 		for (auto huda : MonthBahuda) {
 			huda.Render(Position);
@@ -103,10 +93,6 @@ void DrawTable(int turn, BahudaLines Bahuda, TehudaLines ATehuda, TehudaLines BT
 	BasePoint = CenterPos + Vec2{ +gap * 1.5 + huda.width , -BaseDy };
 	for (int i = 0; i < 3; i++) {
 		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
-		/*RectF(Arg::center(Position), huda.width, huda.height)
-			.drawFrame(1, Palette::Black)
-			.draw(ColorF(0.26, 0.43, 0.43));
-		*/
 		auto MonthBahuda = Bahuda[i+6];
 		for (auto huda : MonthBahuda) {
 			huda.Render(Position);
@@ -116,11 +102,6 @@ void DrawTable(int turn, BahudaLines Bahuda, TehudaLines ATehuda, TehudaLines BT
 	BasePoint = CenterPos + Vec2{ +gap * 1.5 + huda.width , +BaseDy };
 	for (int i = 0; i < 3; i++) {
 		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
-		/*
-		RectF(Arg::center(Position), huda.width, huda.height)
-			.drawFrame(1, Palette::Black)
-			.draw(ColorF(0.26, 0.43, 0.43));
-		*/
 		auto MonthBahuda = Bahuda[i+9];
 		for (auto huda : MonthBahuda) {
 			huda.Render(Position);
