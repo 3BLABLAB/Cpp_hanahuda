@@ -57,7 +57,7 @@ public:void Render() {
 };
 
 using BahudaLines = std::array<Array<Huda>, 12>;
-using TehudaLines = std::array<Huda, 8>;
+using TehudaLines = std::vector<Huda>;
 
 void DrawRadialGradientBackground(const ColorF& centerColor, const ColorF& outerColor)
 {
@@ -122,7 +122,7 @@ void DrawTable(int turn, BahudaLines& Bahuda, TehudaLines& ATehuda, TehudaLines&
 	//A
 	BasePoint = Vec2 ATehudaBasePosition;
 	gap = -20;
-	for (int i = 0; i < size(ATehuda);i++) {
+	for (int i = 0; i < ATehuda.size();i++) {
 		Huda& huda = ATehuda[i];
 		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
 		
@@ -132,7 +132,7 @@ void DrawTable(int turn, BahudaLines& Bahuda, TehudaLines& ATehuda, TehudaLines&
 	//B
 	BasePoint = Vec2{ 200,100 };
 	gap = -20;
-	for (int i = 0; i < size(BTehuda); i++) {
+	for (int i = 0; i < BTehuda.size(); i++) {
 		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
 		RectF(Arg::center(Position), huda.width, huda.height)
 			.drawFrame(1, Palette::Black)
@@ -211,7 +211,7 @@ void PrintMonthsWithCards(const BahudaLines& bahuda)
 }
 
 //プレイヤーの手札クリック検知
-// 戻り値: クリックされた手札の index（0～7）or -1
+//戻り値: クリックされた手札の index（0～7）or -1
 int DetectSelectedTehuda(const TehudaLines& ATehuda,int& SelectedIndex, int& DecidedIndex)
 {
 	Vec2 BasePoint = Vec2{ 200, 500 };
@@ -257,11 +257,14 @@ void Main()
 	//Print << FileSystem::CurrentDirectory();
 
 	bool BahudaAppeared[12][4] = {};
+	//A:Player B:Rival
+	bool AMochihuda[12][4] = {};
+	bool BMochihuda[12][4] = {};
 	// 背景の色を設定する | Set the background color
 	//Scene::SetBackground(ColorF{ 0.3, 0.9, 0.6 });
 	int turn = 0;
 	BahudaLines Bahuda;
-	TehudaLines ATehuda, BTehuda;
+	TehudaLines ATehuda(8), BTehuda(8);
 	HudaTextureManager::Load();
 	InitializeTable(BahudaAppeared,Bahuda, ATehuda, BTehuda);
 	//for Debugging
@@ -287,9 +290,20 @@ void Main()
 			if (DecidedIndex != -1)
 			{
 				DecidedHuda = ATehuda[DecidedIndex];
-				Print << DecidedHuda.month+1<<DecidedHuda.order+1;
+				if (!Bahuda[DecidedHuda.month].isEmpty()) {
+					for (auto huda : Bahuda[DecidedHuda.month]) {
+						//獲得
+						AMochihuda[huda.month][huda.order] = true;
+					}
+					//場札から削除
+					Bahuda[DecidedHuda.month].clear();
+					//手札から削除
+					ATehuda.erase(ATehuda.begin()+ DecidedIndex);
+				}
 			}
+
 		}
+		IsPlayerTurn = !IsPlayerTurn;
 	}
 }
 
