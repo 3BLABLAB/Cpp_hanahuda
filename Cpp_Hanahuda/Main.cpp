@@ -132,6 +132,7 @@ void DrawTable(int turn, BahudaLines& Bahuda, TehudaLines& ATehuda, TehudaLines&
 	BasePoint = Vec2{ 200,100 };
 	gap = -20;
 	for (int i = 0; i < BTehuda.size(); i++) {
+		Huda& huda = BTehuda[i];
 		Vec2 Position = BasePoint + i * Vec2(huda.width + gap, 0);
 		RectF(Arg::center(Position), huda.width, huda.height)
 			.drawFrame(1, Palette::Black)
